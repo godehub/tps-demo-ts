@@ -1,6 +1,6 @@
 [gd_scene load_steps=57 format=3 uid="uid://jphgr3qep5"]
 
-[ext_resource type="Script" path="res://player/bullet/bullet.js" id="1"]
+[ext_resource type="Script" path="res://player/bullet/bullet.ts" id="1"]
 [ext_resource type="ArrayMesh" uid="uid://dqkkefcnt0erw" path="res://effects_shared/BlastMesh_Sphere.mesh" id="2"]
 [ext_resource type="AudioStream" uid="uid://c0bpunl6shvlr" path="res://player/bullet/bullet_explode.wav" id="3"]
 [ext_resource type="Material" uid="uid://bxjcw6j767jtn" path="res://player/bullet/effect/BlastMaterial.tres" id="4"]

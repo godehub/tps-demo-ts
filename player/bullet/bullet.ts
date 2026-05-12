@@ -1,18 +1,24 @@
 import godot from "godot";
 const { CharacterBody3D, Vector3 } = godot;
+import type { AnimationPlayer, CollisionShape3D, GodotObject, OmniLight3D } from "godot";
 
 const BULLET_VELOCITY = 20.0;
 
-class Bullet extends CharacterBody3D {
+export default class Bullet extends CharacterBody3D {
 	time_alive = 5.0;
 	hit = false;
+	declare animation_player: AnimationPlayer;
+	declare collision_shape: CollisionShape3D;
+	declare omni_light: OmniLight3D;
+	declare settings: SettingsNode;
+	declare is_server: boolean;
 
-	_ready() {
+	_ready(): void {
 		// Only the server simulates bullet collisions; clients display replicated effects.
-		this.animation_player = this.get_node("AnimationPlayer");
-		this.collision_shape = this.get_node("CollisionShape3D");
-		this.omni_light = this.get_node("OmniLight3D");
-		this.settings = this.get_node("/root/Settings");
+		this.animation_player = this.get_node("AnimationPlayer") as AnimationPlayer;
+		this.collision_shape = this.get_node("CollisionShape3D") as CollisionShape3D;
+		this.omni_light = this.get_node("OmniLight3D") as OmniLight3D;
+		this.settings = this.get_node("/root/Settings") as SettingsNode;
 		this.is_server = this.get_multiplayer().is_server();
 		if (!this.is_server) {
 			this.set_physics_process(false);
@@ -20,7 +26,7 @@ class Bullet extends CharacterBody3D {
 		}
 	}
 
-	_physics_process(delta) {
+	_physics_process(delta: number): void {
 		if (this.hit) {
 			return;
 		}
@@ -35,7 +41,7 @@ class Bullet extends CharacterBody3D {
 		const displacement = new Vector3(forward.x * speed, forward.y * speed, forward.z * speed);
 		const col = this.move_and_collide(displacement);
 		if (col) {
-			const collider = col.get_collider();
+			const collider = col.get_collider() as unknown as GodotObject & { rpc(method: string): void };
 			if (collider && collider.has_method("hit")) {
 				collider.rpc("hit");
 			}
@@ -45,20 +51,17 @@ class Bullet extends CharacterBody3D {
 		}
 	}
 
-	explode() {
+	explode(): void {
 		this.animation_player.play("explode");
 		if (this.settings.value("rendering", "shadow_mapping")) {
 			this.omni_light.shadow_enabled = true;
 		}
 	}
 
-	destroy() {
+	destroy(): void {
 		if (!this.is_server) {
 			return;
 		}
 		this.queue_free();
 	}
 }
-
-
-export default Bullet;
