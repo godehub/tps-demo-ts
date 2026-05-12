@@ -1,6 +1,6 @@
 # Gode TPS Demo
 
-Third person shooter demo made using [Godot Engine](https://godotengine.org) and JavaScript([Gode](https://github.com/godothub/gode)).
+Third person shooter demo made using [Godot Engine](https://godotengine.org) and TypeScript([Gode](https://github.com/godothub/gode)).
 
 ![Screenshot of TPS demo](screenshots/screenshot.webp)
 
@@ -9,8 +9,15 @@ Third person shooter demo made using [Godot Engine](https://godotengine.org) and
 
 You need [Godot Engine](https://godotengine.org) to run this demo project.
 
-This project uses JavaScript scripts through [Gode](https://github.com/godothub/gode).
-Install Gode 1.6.3 or newer into `addons/gode` before opening the project.
+This project uses TypeScript scripts through [Gode](https://github.com/godothub/gode).
+Install Gode 1.7 or newer into `addons/gode` before opening the project.
+
+TypeScript source files are attached in scenes as `res://*.ts`. Gode loads their compiled JavaScript from `res://dist`, so build once before running or keep the watcher open while editing:
+
+```bash
+npm install
+npm run build
+```
 
 ## Controls
 
