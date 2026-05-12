@@ -1,5 +1,6 @@
 import godot from "godot";
 const { Basis, CharacterBody3D, Transform3D, Vector2, Vector3 } = godot;
+import type { AudioStreamPlayer, Basis as BasisType, CharacterBody3D as CharacterBody3DType, Control, Node, Node3D, Timer, Transform3D as Transform3DType, Vector2 as Vector2Type, Vector3 as Vector3Type } from "godot";
 import { transformFromMotion, transformMul, v3Add, v3Sub } from "../scripts/godot_math.js";
 
 export const Animations = {
@@ -12,9 +13,10 @@ const MOTION_INTERPOLATE_SPEED = 10.0;
 const ROTATION_INTERPOLATE_SPEED = 10.0;
 const MIN_AIRBORNE_TIME = 0.1;
 const JUMP_SPEED = 5.0;
-const BulletScene = globalThis.ResourceLoader.load("res://player/bullet/bullet.tscn");
+const BulletScene = globalThis.ResourceLoader.load("res://player/bullet/bullet.tscn") as PackedSceneOf<CharacterBody3DType>;
+type AnimationId = typeof Animations[keyof typeof Animations];
 
-class Player extends CharacterBody3D {
+export default class Player extends CharacterBody3D {
 	static exports = {
 		player_id: { type: "int" },
 		current_animation: { type: "int" } };
@@ -24,28 +26,44 @@ class Player extends CharacterBody3D {
 	};
 
 	airborne_time = 100.0;
-	orientation = new Transform3D();
-	root_motion = new Transform3D();
-	motion = new Vector2();
+	orientation: Transform3DType = new Transform3D();
+	root_motion: Transform3DType = new Transform3D();
+	motion: Vector2Type = new Vector2();
 	player_id = 1;
 	current_animation = Animations.WALK;
+	state_transition = "";
+	declare initial_position: Vector3Type;
+	declare player_input: PlayerInputNode;
+	declare animation_tree: AnimationTreeNode;
+	declare player_model: Node3D;
+	declare shoot_from: Node3D;
+	declare shoot_particle: ParticleNode;
+	declare muzzle_particle: ParticleNode;
+	declare crosshair: Control;
+	declare fire_cooldown: Timer;
+	declare parent_node: Node;
+	declare sound_effects: Node;
+	declare sound_effect_jump: AudioStreamPlayer;
+	declare sound_effect_land: AudioStreamPlayer;
+	declare sound_effect_shoot: AudioStreamPlayer;
+	declare is_server: boolean;
 
-	_ready() {
+	_ready(): void {
 		this.initial_position = new Vector3(this.transform.origin);
 		// Cache nodes used by the physics loop to avoid repeated Godot boundary calls.
-		this.player_input = this.get_node("InputSynchronizer");
-		this.animation_tree = this.get_node("AnimationTree");
-		this.player_model = this.get_node("PlayerModel");
-		this.shoot_from = this.player_model.get_node("Robot_Skeleton/Skeleton3D/GunBone/ShootFrom");
-		this.shoot_particle = this.shoot_from.get_node("ShootParticle");
-		this.muzzle_particle = this.shoot_from.get_node("MuzzleFlash");
-		this.crosshair = this.get_node("Crosshair");
-		this.fire_cooldown = this.get_node("FireCooldown");
+		this.player_input = this.get_node("InputSynchronizer") as PlayerInputNode;
+		this.animation_tree = this.get_node("AnimationTree") as AnimationTreeNode;
+		this.player_model = this.get_node("PlayerModel") as Node3D;
+		this.shoot_from = this.player_model.get_node("Robot_Skeleton/Skeleton3D/GunBone/ShootFrom") as Node3D;
+		this.shoot_particle = this.shoot_from.get_node("ShootParticle") as ParticleNode;
+		this.muzzle_particle = this.shoot_from.get_node("MuzzleFlash") as ParticleNode;
+		this.crosshair = this.get_node("Crosshair") as Control;
+		this.fire_cooldown = this.get_node("FireCooldown") as Timer;
 		this.parent_node = this.get_parent();
 		this.sound_effects = this.get_node("SoundEffects");
-		this.sound_effect_jump = this.sound_effects.get_node("Jump");
-		this.sound_effect_land = this.sound_effects.get_node("Land");
-		this.sound_effect_shoot = this.sound_effects.get_node("Shoot");
+		this.sound_effect_jump = this.sound_effects.get_node("Jump") as AudioStreamPlayer;
+		this.sound_effect_land = this.sound_effects.get_node("Land") as AudioStreamPlayer;
+		this.sound_effect_shoot = this.sound_effects.get_node("Shoot") as AudioStreamPlayer;
 
 		this.player_input.set_multiplayer_authority(this.player_id);
 		this.orientation = new Transform3D(this.player_model.global_transform);
@@ -56,7 +74,7 @@ class Player extends CharacterBody3D {
 		}
 	}
 
-	_physics_process(delta) {
+	_physics_process(delta: number): void {
 		// The server owns gameplay state; clients only replay replicated animation state.
 		if (this.is_server) {
 			this.apply_input(delta);
@@ -65,7 +83,7 @@ class Player extends CharacterBody3D {
 		}
 	}
 
-	animate(anim, _delta) {
+	animate(anim: AnimationId, _delta: number): void {
 		this.current_animation = anim;
 		if (anim === Animations.JUMP_UP) {
 			this.set_state_transition("jump_up");
@@ -82,7 +100,7 @@ class Player extends CharacterBody3D {
 		}
 	}
 
-	set_state_transition(transition) {
+	set_state_transition(transition: string): void {
 		// AnimationTree writes cross the Godot boundary, so avoid resending the same transition every frame.
 		if (this.state_transition === transition) {
 			return;
@@ -91,7 +109,7 @@ class Player extends CharacterBody3D {
 		this.animation_tree.set("parameters/state/transition_request", transition);
 	}
 
-	apply_input(delta) {
+	apply_input(delta: number): void {
 		this.motion = this.motion.lerp(this.player_input.motion, MOTION_INTERPOLATE_SPEED * delta);
 
 		const cameraBasis = this.player_input.get_camera_rotation_basis();
@@ -132,7 +150,7 @@ class Player extends CharacterBody3D {
 			if (this.player_input.shooting && this.fire_cooldown.time_left === 0) {
 				const shootOrigin = this.shoot_from.global_transform.origin;
 				const shootDir = v3Sub(this.player_input.shoot_target, shootOrigin).normalized();
-				const bullet = BulletScene.instantiate();
+				const bullet = BulletScene.instantiate() as CharacterBody3DType;
 				this.parent_node.add_child(bullet, true);
 				const bulletTransform = bullet.global_transform;
 				bulletTransform.origin = shootOrigin;
@@ -183,17 +201,17 @@ class Player extends CharacterBody3D {
 		}
 	}
 
-	jump() {
+	jump(): void {
 		this.animate(Animations.JUMP_UP, 0.0);
 		this.sound_effect_jump.play();
 	}
 
-	land() {
+	land(): void {
 		this.animate(Animations.JUMP_DOWN, 0.0);
 		this.sound_effect_land.play();
 	}
 
-	shoot() {
+	shoot(): void {
 		this.shoot_particle.restart();
 		this.shoot_particle.emitting = true;
 		this.muzzle_particle.restart();
@@ -203,14 +221,11 @@ class Player extends CharacterBody3D {
 		this.add_camera_shake_trauma(0.35);
 	}
 
-	hit() {
+	hit(): void {
 		this.add_camera_shake_trauma(0.75);
 	}
 
-	add_camera_shake_trauma(amount) {
+	add_camera_shake_trauma(amount: number): void {
 		this.player_input.camera_camera.add_trauma(amount);
 	}
 }
-
-
-export default Player;
