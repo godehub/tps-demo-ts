@@ -1,16 +1,19 @@
 import godot from "godot";
 const { Label, OfflineMultiplayerPeer } = godot;
+import type { MultiplayerAPI } from "godot";
 const DisplayServer = globalThis.DisplayServer;
 const Engine = globalThis.Engine;
 const Input = globalThis.Input;
 const OS = globalThis.OS;
 
-class DebugLabel extends Label {
-	_ready() {
+export default class DebugLabel extends Label {
+	declare multiplayer_api: MultiplayerAPI;
+
+	_ready(): void {
 		this.multiplayer_api = this.get_multiplayer();
 	}
 
-	_process(_delta) {
+	_process(_delta: number): void {
 		if (Input.is_action_just_pressed("toggle_debug")) {
 			this.visible = !this.visible;
 		}
@@ -26,6 +29,3 @@ class DebugLabel extends Label {
 		}
 	}
 }
-
-
-export default DebugLabel;
