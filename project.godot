@@ -27,7 +27,7 @@ buses/default_bus_layout="uid://vtdn63d3ksc2"
 [autoload]
 
 EventLoop="*res://addons/gode/runtime/event_loop.gd"
-Settings="*res://menu/settings.js"
+Settings="*res://menu/settings.ts"
 
 [display]
 

@@ -1,5 +1,6 @@
 import godot from "godot";
 const { ConfigFile, Node, Viewport, Window } = godot;
+import type { Environment, InputEvent, Node as NodeType, Window as WindowType } from "godot";
 
 export const GIType = {
 	SDFGI: 0,
@@ -13,21 +14,47 @@ export const GIQuality = {
 
 const CONFIG_FILE_PATH = "user://settings.ini";
 
-class Settings extends Node {
+type VideoSettings = {
+	display_mode: number;
+	vsync: number;
+	max_fps: number;
+	resolution_scale: number;
+	scale_filter: number;
+};
+
+type RenderingSettings = {
+	taa: boolean;
+	msaa: number;
+	fxaa: boolean;
+	shadow_mapping: boolean;
+	gi_type: number;
+	gi_quality: number;
+	ssao_quality: number;
+	ssil_quality: number;
+	bloom: boolean;
+	volumetric_fog: boolean;
+};
+
+type SettingsDefaults = {
+	video: VideoSettings;
+	rendering: RenderingSettings;
+};
+
+export default class Settings extends Node {
 	GIType = GIType;
 	GIQuality = GIQuality;
 	metalfx_supported = globalThis.RenderingServer.get_current_rendering_driver_name() === "metal";
 	config_file = new ConfigFile();
-	DEFAULTS = {
+	DEFAULTS: SettingsDefaults = {
 		video: {
-			display_mode: Window.MODE_EXCLUSIVE_FULLSCREEN ?? 4,
+			display_mode: Window.MODE_EXCLUSIVE_FULLSCREEN,
 			vsync: globalThis.DisplayServer.VSYNC_ENABLED ?? 1,
 			max_fps: 0,
 			resolution_scale: 1.0,
-			scale_filter: this.metalfx_supported ? (Viewport.SCALING_3D_MODE_METALFX_TEMPORAL ?? 3) : (Viewport.SCALING_3D_MODE_FSR2 ?? 2) },
+			scale_filter: this.metalfx_supported ? Viewport.SCALING_3D_MODE_METALFX_TEMPORAL : Viewport.SCALING_3D_MODE_FSR2 },
 		rendering: {
 			taa: false,
-			msaa: Viewport.MSAA_DISABLED ?? 0,
+			msaa: Viewport.MSAA_DISABLED,
 			fxaa: false,
 			shadow_mapping: true,
 			gi_type: GIType.VOXEL_GI,
@@ -37,11 +64,11 @@ class Settings extends Node {
 			bloom: true,
 			volumetric_fog: true } };
 
-	_ready() {
+	_ready(): void {
 		this.load_settings();
 	}
 
-	_input(input_event) {
+	_input(input_event: InputEvent): void {
 		if (input_event.is_action_pressed("toggle_fullscreen")) {
 			const window = this.get_window();
 			const fullscreen = window.mode === Window.MODE_EXCLUSIVE_FULLSCREEN || window.mode === Window.MODE_FULLSCREEN;
@@ -50,34 +77,34 @@ class Settings extends Node {
 		}
 	}
 
-	load_settings() {
+	load_settings(): void {
 		this.config_file.load(CONFIG_FILE_PATH);
-		for (const section of Object.keys(this.DEFAULTS)) {
-			for (const key of Object.keys(this.DEFAULTS[section])) {
+		for (const section of Object.keys(this.DEFAULTS) as SettingsSection[]) {
+			for (const key of Object.keys(this.DEFAULTS[section]) as Array<keyof SettingsDefaults[typeof section]>) {
 				if (!this.config_file.has_section_key(section, key)) {
-					this.config_file.set_value(section, key, this.DEFAULTS[section][key]);
+					this.config_file.set_value(section, key, this.DEFAULTS[section][key] as VariantValue);
 				}
 			}
 		}
 	}
 
-	save_settings() {
+	save_settings(): void {
 		this.config_file.save(CONFIG_FILE_PATH);
 	}
 
-	value(section, key) {
-		return this.config_file.get_value(section, key, this.DEFAULTS[section]?.[key]);
+	value<S extends SettingsSection>(section: S, key: SettingKey<S>): any {
+		return this.config_file.get_value(section, key, (this.DEFAULTS[section] as AnyGodotObject)[key]);
 	}
 
-	apply_graphics_settings(window, environment, scene_root) {
+	apply_graphics_settings(window: WindowType, environment: Environment, scene_root: NodeType): void {
 		this.get_window().mode = this.value("video", "display_mode");
 		globalThis.DisplayServer.window_set_vsync_mode(this.value("video", "vsync"));
 		globalThis.Engine.max_fps = this.value("video", "max_fps");
 		window.scaling_3d_scale = this.value("video", "resolution_scale");
 		window.scaling_3d_mode = this.value("video", "scale_filter");
 
-		window.use_taa = this.value("rendering", "taa");
-		window.msaa_3d = this.value("rendering", "msaa");
+		window.use_taa = Boolean(this.value("rendering", "taa"));
+		window.msaa_3d = Number(this.value("rendering", "msaa"));
 		window.screen_space_aa = this.value("rendering", "fxaa") ? Viewport.SCREEN_SPACE_AA_FXAA : Viewport.SCREEN_SPACE_AA_DISABLED;
 
 		if (!this.value("rendering", "shadow_mapping")) {
@@ -106,10 +133,7 @@ class Settings extends Node {
 			globalThis.RenderingServer.environment_set_ssil_quality(globalThis.RenderingServer.ENV_SSIL_QUALITY_HIGH, true, 0.5, 2, 50, 300);
 		}
 
-		environment.glow_enabled = this.value("rendering", "bloom");
-		environment.volumetric_fog_enabled = this.value("rendering", "volumetric_fog");
+		environment.glow_enabled = Boolean(this.value("rendering", "bloom"));
+		environment.volumetric_fog_enabled = Boolean(this.value("rendering", "volumetric_fog"));
 	}
 }
-
-
-export default Settings;
