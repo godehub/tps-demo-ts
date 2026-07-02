@@ -1,5 +1,4 @@
-import godot from "godot";
-const { Node3D } = godot;
+import { Node3D } from "godot";
 import type { Light3D, Node3D as Node3DType } from "godot";
 
 export default class FlyingForklift extends Node3D {

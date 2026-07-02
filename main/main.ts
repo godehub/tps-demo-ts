@@ -1,5 +1,4 @@
-import godot from "godot";
-const { Node, OfflineMultiplayerPeer } = godot;
+import { Node, OfflineMultiplayerPeer, DisplayServer, Engine, ResourceLoader } from "godot";
 import type { PackedScene, Resource, SceneMultiplayer } from "godot";
 
 export default class Main extends Node {
@@ -10,8 +9,8 @@ export default class Main extends Node {
 		}
 		const settings = this.get_node("/root/Settings") as SettingsNode;
 		settings.load_settings();
-		if (globalThis.DisplayServer.get_name() === "headless") {
-			globalThis.Engine.max_fps = 60;
+		if (DisplayServer.get_name() === "headless") {
+			Engine.max_fps = 60;
 		} else {
 			this.get_window().mode = Number(settings.config_file.get_value("video", "display_mode", 4));
 		}
@@ -19,7 +18,7 @@ export default class Main extends Node {
 	}
 
 	go_to_main_menu(): void {
-		const menu = globalThis.ResourceLoader.load("res://menu/menu.tscn") as PackedScene;
+		const menu = ResourceLoader.load("res://menu/menu.tscn") as PackedScene;
 		const multiplayer = this.get_multiplayer();
 		if (multiplayer?.multiplayer_peer) {
 			multiplayer.multiplayer_peer.close();

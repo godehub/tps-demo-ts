@@ -1,5 +1,4 @@
-import godot from "godot";
-const { Node3D } = godot;
+import { Node3D } from "godot";
 import type { AnimationPlayer, Camera3D, Node3D as Node3DType, Viewport } from "godot";
 
 export default class Blast extends Node3D {

@@ -10,7 +10,7 @@ Third person shooter demo made using [Godot Engine](https://godotengine.org) and
 You need [Godot Engine](https://godotengine.org) to run this demo project.
 
 This project uses TypeScript scripts through [Gode](https://github.com/godothub/gode).
-Install Gode 1.7 or newer into `addons/gode` before opening the project.
+Install Gode 2.0.0 into `addons/gode` before opening the project. The demo uses explicit named imports from the `godot` module and does not rely on legacy global Godot APIs.
 
 TypeScript source files are attached in scenes as `res://*.ts`. Gode loads their compiled JavaScript from `res://dist`, so build once before running or keep the watcher open while editing:
 

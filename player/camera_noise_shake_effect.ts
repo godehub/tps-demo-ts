@@ -1,5 +1,4 @@
-import godot from "godot";
-const { Camera3D, FastNoiseLite, Vector3 } = godot;
+import { Camera3D, FastNoiseLite, Vector3 } from "godot";
 import type { FastNoiseLite as FastNoiseLiteType, Vector3 as Vector3Type } from "godot";
 
 const SPEED = 1.0;

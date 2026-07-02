@@ -1,5 +1,4 @@
-import godot from "godot";
-const { Area3D } = godot;
+import { Area3D } from "godot";
 import type { AnimationPlayer } from "godot";
 
 export default class Door extends Area3D {

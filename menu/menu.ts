@@ -1,5 +1,4 @@
-import godot from "godot";
-const { BaseButton, ButtonGroup, ENetMultiplayerPeer, Node, OfflineMultiplayerPeer, Viewport, Window } = godot;
+import { BaseButton, ButtonGroup, ENetMultiplayerPeer, Node, OfflineMultiplayerPeer, Viewport, Window, RenderingServer, ResourceLoader, DisplayServer } from "godot";
 import type { Control, ENetMultiplayerPeer as ENetMultiplayerPeerType, MultiplayerPeer, Node as NodeType, OfflineMultiplayerPeer as OfflineMultiplayerPeerType, Timer } from "godot";
 
 const LEVEL_PATH = "res://level/level.tscn";
@@ -11,7 +10,7 @@ export default class Menu extends Node {
 	};
 
 	peer: OfflineMultiplayerPeerType | ENetMultiplayerPeerType = new OfflineMultiplayerPeer();
-	metalfx_supported = globalThis.RenderingServer.get_current_rendering_driver_name() === "metal";
+	metalfx_supported = RenderingServer.get_current_rendering_driver_name() === "metal";
 	declare settings: SettingsNode;
 	declare world_environment: WorldEnvironmentNode;
 	declare ui: NodeType;
@@ -191,10 +190,10 @@ export default class Menu extends Node {
 		if (this.loading.visible) {
 			// Poll threaded loading from the menu so the UI stays responsive during scene preparation.
 			const progress: number[] = [];
-			const status = globalThis.ResourceLoader.load_threaded_get_status(LEVEL_PATH, progress);
-			if (status === globalThis.ResourceLoader.THREAD_LOAD_IN_PROGRESS) {
+			const status = ResourceLoader.load_threaded_get_status(LEVEL_PATH, progress);
+			if (status === ResourceLoader.THREAD_LOAD_IN_PROGRESS) {
 				this.loading_progress.value = progress[0] * 100.0;
-			} else if (status === globalThis.ResourceLoader.THREAD_LOAD_LOADED) {
+			} else if (status === ResourceLoader.THREAD_LOAD_LOADED) {
 				this.loading_progress.value = 100.0;
 				this.set_process(false);
 				this.loading_done_timer.start();
@@ -217,13 +216,13 @@ export default class Menu extends Node {
 
 	_on_loading_done_timer_timeout(): void {
 		this.get_multiplayer().multiplayer_peer = this.peer as unknown as MultiplayerPeer;
-		this.emit_signal("replace_main_scene", globalThis.ResourceLoader.load_threaded_get(LEVEL_PATH));
+		this.emit_signal("replace_main_scene", ResourceLoader.load_threaded_get(LEVEL_PATH));
 	}
 
 	_on_play_pressed(): void {
 		this.main.hide();
 		this.loading.show();
-		globalThis.ResourceLoader.load_threaded_request(LEVEL_PATH, "", true);
+		ResourceLoader.load_threaded_request(LEVEL_PATH, "", true);
 	}
 
 	_on_settings_pressed(): void {
@@ -237,10 +236,10 @@ export default class Menu extends Node {
 			[this.display_mode_exclusive_fullscreen, [Window.MODE_EXCLUSIVE_FULLSCREEN]],
 		], cfg.get_value("video", "display_mode"));
 		this.selectValue([
-			[this.vsync_disabled, globalThis.DisplayServer.VSYNC_DISABLED],
-			[this.vsync_enabled, globalThis.DisplayServer.VSYNC_ENABLED],
-			[this.vsync_adaptive, globalThis.DisplayServer.VSYNC_ADAPTIVE],
-			[this.vsync_mailbox, globalThis.DisplayServer.VSYNC_MAILBOX],
+			[this.vsync_disabled, DisplayServer.VSYNC_DISABLED],
+			[this.vsync_enabled, DisplayServer.VSYNC_ENABLED],
+			[this.vsync_adaptive, DisplayServer.VSYNC_ADAPTIVE],
+			[this.vsync_mailbox, DisplayServer.VSYNC_MAILBOX],
 		], cfg.get_value("video", "vsync"));
 		this.selectValue([
 			[this.max_fps_30, 30], [this.max_fps_40, 40], [this.max_fps_60, 60], [this.max_fps_72, 72],
@@ -267,8 +266,8 @@ export default class Menu extends Node {
 		this.fxaa_enabled.button_pressed = Boolean(cfg.get_value("rendering", "fxaa"));
 		this.shadow_mapping_disabled.button_pressed = !cfg.get_value("rendering", "shadow_mapping");
 		this.shadow_mapping_enabled.button_pressed = Boolean(cfg.get_value("rendering", "shadow_mapping"));
-		this.selectValue([[this.ssao_disabled, -1], [this.ssao_medium, globalThis.RenderingServer.ENV_SSAO_QUALITY_MEDIUM], [this.ssao_high, globalThis.RenderingServer.ENV_SSAO_QUALITY_HIGH]], cfg.get_value("rendering", "ssao_quality"));
-		this.selectValue([[this.ssil_disabled, -1], [this.ssil_medium, globalThis.RenderingServer.ENV_SSIL_QUALITY_MEDIUM], [this.ssil_high, globalThis.RenderingServer.ENV_SSIL_QUALITY_HIGH]], cfg.get_value("rendering", "ssil_quality"));
+		this.selectValue([[this.ssao_disabled, -1], [this.ssao_medium, RenderingServer.ENV_SSAO_QUALITY_MEDIUM], [this.ssao_high, RenderingServer.ENV_SSAO_QUALITY_HIGH]], cfg.get_value("rendering", "ssao_quality"));
+		this.selectValue([[this.ssil_disabled, -1], [this.ssil_medium, RenderingServer.ENV_SSIL_QUALITY_MEDIUM], [this.ssil_high, RenderingServer.ENV_SSIL_QUALITY_HIGH]], cfg.get_value("rendering", "ssil_quality"));
 		this.bloom_disabled.button_pressed = !cfg.get_value("rendering", "bloom");
 		this.bloom_enabled.button_pressed = Boolean(cfg.get_value("rendering", "bloom"));
 		this.volumetric_fog_disabled.button_pressed = !cfg.get_value("rendering", "volumetric_fog");
@@ -276,8 +275,9 @@ export default class Menu extends Node {
 	}
 
 	selectValue(pairs: SelectPair[], value: VariantValue): void {
+		const numericValue = Number(value);
 		for (const [button, expected] of pairs) {
-			button.button_pressed = Array.isArray(expected) ? expected.includes(value) : expected === value;
+			button.button_pressed = Array.isArray(expected) ? expected.includes(numericValue) : expected === numericValue;
 		}
 	}
 
@@ -297,7 +297,7 @@ export default class Menu extends Node {
 		this.play_button.grab_focus();
 		this.settings_menu.hide();
 		this.storeSelected("video", "display_mode", [[this.display_mode_windowed, Window.MODE_WINDOWED], [this.display_mode_fullscreen, Window.MODE_FULLSCREEN], [this.display_mode_exclusive_fullscreen, Window.MODE_EXCLUSIVE_FULLSCREEN]]);
-		this.storeSelected("video", "vsync", [[this.vsync_disabled, globalThis.DisplayServer.VSYNC_DISABLED], [this.vsync_enabled, globalThis.DisplayServer.VSYNC_ENABLED], [this.vsync_adaptive, globalThis.DisplayServer.VSYNC_ADAPTIVE], [this.vsync_mailbox, globalThis.DisplayServer.VSYNC_MAILBOX]]);
+		this.storeSelected("video", "vsync", [[this.vsync_disabled, DisplayServer.VSYNC_DISABLED], [this.vsync_enabled, DisplayServer.VSYNC_ENABLED], [this.vsync_adaptive, DisplayServer.VSYNC_ADAPTIVE], [this.vsync_mailbox, DisplayServer.VSYNC_MAILBOX]]);
 		this.storeSelected("video", "max_fps", [[this.max_fps_30, 30], [this.max_fps_40, 40], [this.max_fps_60, 60], [this.max_fps_72, 72], [this.max_fps_90, 90], [this.max_fps_120, 120], [this.max_fps_144, 144], [this.max_fps_unlimited, 0]]);
 		this.storeSelected("video", "resolution_scale", [[this.resolution_scale_ultra_performance, 1.0 / 3.0], [this.resolution_scale_performance, 1.0 / 2.0], [this.resolution_scale_balanced, 1.0 / 1.7], [this.resolution_scale_quality, 1.0 / 1.5], [this.resolution_scale_ultra_quality, 1.0 / 1.3], [this.resolution_scale_native, 1.0]]);
 		this.storeSelected("video", "scale_filter", [[this.scale_filter_bilinear, Viewport.SCALING_3D_MODE_BILINEAR], [this.scale_filter_fsr1, Viewport.SCALING_3D_MODE_FSR], [this.scale_filter_fsr2, Viewport.SCALING_3D_MODE_FSR2], [this.scale_filter_metalfx_spatial, Viewport.SCALING_3D_MODE_METALFX_SPATIAL], [this.scale_filter_metalfx_temporal, Viewport.SCALING_3D_MODE_METALFX_TEMPORAL]]);
@@ -307,8 +307,8 @@ export default class Menu extends Node {
 		this.storeSelected("rendering", "msaa", [[this.msaa_disabled, Viewport.MSAA_DISABLED], [this.msaa_2x, Viewport.MSAA_2X], [this.msaa_4x, Viewport.MSAA_4X], [this.msaa_8x, Viewport.MSAA_8X]]);
 		cfg.set_value("rendering", "shadow_mapping", this.shadow_mapping_enabled.button_pressed);
 		cfg.set_value("rendering", "fxaa", this.fxaa_enabled.button_pressed);
-		this.storeSelected("rendering", "ssao_quality", [[this.ssao_disabled, -1], [this.ssao_medium, globalThis.RenderingServer.ENV_SSAO_QUALITY_MEDIUM], [this.ssao_high, globalThis.RenderingServer.ENV_SSAO_QUALITY_HIGH]]);
-		this.storeSelected("rendering", "ssil_quality", [[this.ssil_disabled, -1], [this.ssil_medium, globalThis.RenderingServer.ENV_SSIL_QUALITY_MEDIUM], [this.ssil_high, globalThis.RenderingServer.ENV_SSIL_QUALITY_HIGH]]);
+		this.storeSelected("rendering", "ssao_quality", [[this.ssao_disabled, -1], [this.ssao_medium, RenderingServer.ENV_SSAO_QUALITY_MEDIUM], [this.ssao_high, RenderingServer.ENV_SSAO_QUALITY_HIGH]]);
+		this.storeSelected("rendering", "ssil_quality", [[this.ssil_disabled, -1], [this.ssil_medium, RenderingServer.ENV_SSIL_QUALITY_MEDIUM], [this.ssil_high, RenderingServer.ENV_SSIL_QUALITY_HIGH]]);
 		cfg.set_value("rendering", "bloom", this.bloom_enabled.button_pressed);
 		cfg.set_value("rendering", "volumetric_fog", this.volumetric_fog_enabled.button_pressed);
 		this.settings.apply_graphics_settings(this.get_window(), this.world_environment.environment, this);

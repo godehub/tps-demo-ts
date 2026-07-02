@@ -15,6 +15,7 @@ import type {
 	Node,
 	Node3D,
 	PackedScene,
+	PhysicsDirectSpaceState3D,
 	ProgressBar,
 	Resource,
 	RigidBody3D,
@@ -93,9 +94,7 @@ declare global {
 		collider?: Node & { rpc(method: string, ...args: VariantValue[]): unknown; has_method(method: string): boolean };
 	};
 
-	type PhysicsSpaceState = {
-		intersect_ray(query: VariantValue): Partial<RayHit>;
-	};
+	type PhysicsSpaceState = PhysicsDirectSpaceState3D;
 
 	type AnimationTreeNode = AnimationTree & {
 		get_root_motion_rotation(): import("godot").Quaternion;

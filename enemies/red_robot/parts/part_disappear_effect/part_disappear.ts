@@ -1,5 +1,4 @@
-import godot from "godot";
-const { CPUParticles3D } = godot;
+import { CPUParticles3D } from "godot";
 import type { CPUParticles3D as CPUParticles3DType } from "godot";
 
 export default class PartDisappear extends CPUParticles3D {

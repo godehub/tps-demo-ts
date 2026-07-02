@@ -1,5 +1,4 @@
-import godot from "godot";
-const { Vector3, Transform3D } = godot;
+import { Vector3, Transform3D } from "godot";
 import type { Basis, Quaternion, Transform3D as Transform3DType, Vector3 as Vector3Type } from "godot";
 
 // Small math helpers keep call sites readable where JavaScript cannot use Godot's operator overloads.

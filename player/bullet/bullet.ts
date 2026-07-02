@@ -1,5 +1,4 @@
-import godot from "godot";
-const { CharacterBody3D, Vector3 } = godot;
+import { CharacterBody3D, Vector3 } from "godot";
 import type { AnimationPlayer, CollisionShape3D, GodotObject, OmniLight3D } from "godot";
 
 const BULLET_VELOCITY = 20.0;

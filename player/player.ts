@@ -1,5 +1,4 @@
-import godot from "godot";
-const { Basis, CharacterBody3D, Transform3D, Vector2, Vector3 } = godot;
+import { Basis, CharacterBody3D, Transform3D, Vector2, Vector3, ResourceLoader } from "godot";
 import type { AudioStreamPlayer, Basis as BasisType, CharacterBody3D as CharacterBody3DType, Control, Node, Node3D, Timer, Transform3D as Transform3DType, Vector2 as Vector2Type, Vector3 as Vector3Type } from "godot";
 import { transformFromMotion, transformMul, v3Add, v3Sub } from "../scripts/godot_math.js";
 
@@ -13,7 +12,7 @@ const MOTION_INTERPOLATE_SPEED = 10.0;
 const ROTATION_INTERPOLATE_SPEED = 10.0;
 const MIN_AIRBORNE_TIME = 0.1;
 const JUMP_SPEED = 5.0;
-const BulletScene = globalThis.ResourceLoader.load("res://player/bullet/bullet.tscn") as PackedSceneOf<CharacterBody3DType>;
+const BulletScene = ResourceLoader.load("res://player/bullet/bullet.tscn") as PackedSceneOf<CharacterBody3DType>;
 type AnimationId = typeof Animations[keyof typeof Animations];
 
 export default class Player extends CharacterBody3D {

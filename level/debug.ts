@@ -1,10 +1,5 @@
-import godot from "godot";
-const { Label, OfflineMultiplayerPeer } = godot;
+import { Label, OfflineMultiplayerPeer, DisplayServer, Engine, Input, OS } from "godot";
 import type { MultiplayerAPI } from "godot";
-const DisplayServer = globalThis.DisplayServer;
-const Engine = globalThis.Engine;
-const Input = globalThis.Input;
-const OS = globalThis.OS;
 
 export default class DebugLabel extends Label {
 	declare multiplayer_api: MultiplayerAPI;

@@ -1,5 +1,4 @@
-import godot from "godot";
-const { CharacterBody3D, PhysicsRayQueryParameters3D, Transform3D, Vector2, Vector3 } = godot;
+import { CharacterBody3D, PhysicsRayQueryParameters3D, Transform3D, Vector2, Vector3, ResourceLoader, OS } from "godot";
 import type { AnimationPlayer, AudioStreamPlayer3D, CollisionShape3D, CPUParticles3D, Node, Node3D as Node3DType, RayCast3D, Transform3D as Transform3DType, Vector2 as Vector2Type, Vector3 as Vector3Type } from "godot";
 import { transformFromMotion, transformMul, v3Add, v3IsZero, v3Sub, xformInvVector } from "../../scripts/godot_math.js";
 
@@ -13,8 +12,8 @@ const SHOOT_WAIT = 6.0;
 const AIM_TIME = 1.0;
 const AIM_PREPARE_TIME = 0.5;
 const BLEND_AIM_SPEED = 0.05;
-const blastScene = globalThis.ResourceLoader.load("res://enemies/red_robot/laser/impact_effect/impact_effect.tscn") as PackedSceneOf<Node3DType>;
-const dedicatedServer = globalThis.OS.has_feature("dedicated_server");
+const blastScene = ResourceLoader.load("res://enemies/red_robot/laser/impact_effect/impact_effect.tscn") as PackedSceneOf<Node3DType>;
+const dedicatedServer = OS.has_feature("dedicated_server");
 
 type RobotState = typeof State[keyof typeof State];
 type LaserHit = Partial<RayHit> & { collider?: Node | null };

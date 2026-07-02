@@ -1,9 +1,8 @@
-import godot from "godot";
-const { LightmapGI, Node3D, Vector3 } = godot;
+import { LightmapGI, Node3D, Vector3, ResourceLoader, RenderingServer, Input } from "godot";
 import type { InputEvent, LightmapGI as LightmapGIType, Node, Node3D as Node3DType, PackedScene, Resource, Vector3 as Vector3Type } from "godot";
 
-const RedRobot = globalThis.ResourceLoader.load("res://enemies/red_robot/red_robot.tscn") as PackedSceneOf<Node3DType>;
-const PlayerScene = globalThis.ResourceLoader.load("res://player/player.tscn") as PackedSceneOf<PlayerNode>;
+const RedRobot = ResourceLoader.load("res://enemies/red_robot/red_robot.tscn") as PackedSceneOf<Node3DType>;
+const PlayerScene = ResourceLoader.load("res://player/player.tscn") as PackedSceneOf<PlayerNode>;
 
 type SpawnPoint = Node3DType;
 type SpawnedPlayer = PlayerNode & { player_id: number; transform: import("godot").Transform3D };
@@ -67,9 +66,9 @@ export default class Level extends Node3D {
 
 		const quality = this.settings.value("rendering", "gi_quality");
 		if (quality === this.settings.GIQuality.HIGH) {
-			globalThis.RenderingServer.environment_set_sdfgi_ray_count(globalThis.RenderingServer.ENV_SDFGI_RAY_COUNT_96);
+			RenderingServer.environment_set_sdfgi_ray_count(RenderingServer.ENV_SDFGI_RAY_COUNT_96);
 		} else if (quality === this.settings.GIQuality.LOW) {
-			globalThis.RenderingServer.environment_set_sdfgi_ray_count(globalThis.RenderingServer.ENV_SDFGI_RAY_COUNT_32);
+			RenderingServer.environment_set_sdfgi_ray_count(RenderingServer.ENV_SDFGI_RAY_COUNT_32);
 		} else {
 			this.world_environment.environment.sdfgi_enabled = false;
 		}
@@ -85,9 +84,9 @@ export default class Level extends Node3D {
 
 		const quality = this.settings.value("rendering", "gi_quality");
 		if (quality === this.settings.GIQuality.HIGH) {
-			globalThis.RenderingServer.voxel_gi_set_quality(globalThis.RenderingServer.VOXEL_GI_QUALITY_HIGH);
+			RenderingServer.voxel_gi_set_quality(RenderingServer.VOXEL_GI_QUALITY_HIGH);
 		} else if (quality === this.settings.GIQuality.LOW) {
-			globalThis.RenderingServer.voxel_gi_set_quality(globalThis.RenderingServer.VOXEL_GI_QUALITY_LOW);
+			RenderingServer.voxel_gi_set_quality(RenderingServer.VOXEL_GI_QUALITY_LOW);
 		} else {
 			(this.get_node("VoxelGI") as Node3DType).hide();
 		}
@@ -99,7 +98,7 @@ export default class Level extends Node3D {
 		(this.get_node("ReflectionProbes") as Node3DType).show();
 		if (this.lightmap_gi === null) {
 			const newGi = new LightmapGI();
-			newGi.light_data = globalThis.ResourceLoader.load("res://level/level.lmbake") as any;
+			newGi.light_data = ResourceLoader.load("res://level/level.lmbake") as any;
 			newGi.name = "LightmapGI";
 			this.lightmap_gi = newGi;
 			this.add_child(newGi);
@@ -144,7 +143,7 @@ export default class Level extends Node3D {
 
 	_input(input_event: InputEvent): void {
 		if (input_event.is_action_pressed("quit")) {
-			globalThis.Input.set_mouse_mode(globalThis.Input.MOUSE_MODE_VISIBLE);
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE);
 			this.emit_signal("quit");
 		}
 	}

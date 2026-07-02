@@ -1,8 +1,6 @@
-import godot from "godot";
-const { InputEventMouseMotion, MultiplayerSynchronizer, PhysicsRayQueryParameters3D, Vector2, Vector3 } = godot;
+import { InputEventMouseMotion, MultiplayerSynchronizer, PhysicsRayQueryParameters3D, Vector2, Vector3, Input } from "godot";
 import type { AnimationPlayer, Camera3D, ColorRect, Control, InputEvent, Node3D, Vector2 as Vector2Type, Vector3 as Vector3Type } from "godot";
 
-const Input = globalThis.Input;
 
 const CAMERA_CONTROLLER_ROTATION_SPEED = 3.0;
 const CAMERA_MOUSE_ROTATION_SPEED = 0.001;
