@@ -11,8 +11,8 @@
 	<up_axis>Z_UP</up_axis>
 </asset>
 <library_images>
-	<image id="id-image-19" name="doorsimple_d.png">
-		<init_from>doorsimple_d.png</init_from>
+	<image id="id-image-19" name="door_albedo.png">
+		<init_from>../textures/door_albedo.png</init_from>
 	</image>
 </library_images>
 <library_effects>
@@ -656,16 +656,6 @@
 			</node>
 			<node id="id-bone-9" sid="id-skelbones-2-6" name="R-doorhalve" type="JOINT">
 				<matrix sid="transform"> -1.5149538512559957e-08 -1.0 -1.3435884227419592e-07 -1.7000000476837158 7.549790836947068e-08 1.3435884227419592e-07 -1.0 0.0 1.0 0.0 7.549790126404332e-08 1.5 0.0 0.0 0.0 1.0  </matrix>
-			</node>
-			<node id="Plane.007" name="Plane.007" type="NODE">
-				<matrix sid="transform"> 1.0 8.742277657347586e-08 1.3200472311102659e-14 0.0 8.742277657347586e-08 -1.0 -1.5099580252808664e-07 0.0 0.0 -1.5099580252808664e-07 1.0 0.0 0.0 0.0 0.0 1.0  </matrix>
-				<instance_controller url="#id-controller-11">
-					<skeleton>#id-bone-3</skeleton>
-					<skeleton>#id-bone-6</skeleton>
-					<skeleton>#id-bone-7</skeleton>
-					<skeleton>#id-bone-8</skeleton>
-					<skeleton>#id-bone-9</skeleton>
-				</instance_controller>
 			</node>
 			<node id="doorleft-colonly" name="doorleft-colonly" type="NODE">
 				<matrix sid="transform"> -1.014381077236743e-14 -7.549791547489804e-08 -1.0 1.5 1.0 1.3435884227419592e-07 -1.5149549170700993e-08 -2.7000038623809814 1.3435884227419592e-07 -1.0 7.549790836947068e-08 1.4917131011316087e-05 0.0 0.0 0.0 1.0  </matrix>
