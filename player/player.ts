@@ -1,6 +1,6 @@
 import { Basis, CharacterBody3D, Transform3D, Vector2, Vector3, ResourceLoader } from "godot";
 import type { AudioStreamPlayer, Basis as BasisType, CharacterBody3D as CharacterBody3DType, Control, Node, Node3D, Timer, Transform3D as Transform3DType, Vector2 as Vector2Type, Vector3 as Vector3Type } from "godot";
-import { transformFromMotion, transformMul, v3Add, v3Sub } from "../scripts/godot_math.js";
+import { transformFromMotion, transformMul, v3Add, v3Sub } from "../scripts/godot_math";
 
 export const Animations = {
 	JUMP_UP: 0,
