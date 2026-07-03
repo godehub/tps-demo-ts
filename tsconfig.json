@@ -3,30 +3,25 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "rootDir": ".",
-    "outDir": "dist",
-    "allowJs": false,
-    "checkJs": false,
-    "strict": false,
-    "noImplicitAny": false,
-    "skipLibCheck": true,
+    "strict": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "paths": {
-      "godot": [
-        "./addons/gode/types/godot.d.ts"
-      ]
-    },
-    "types": [
-      "node"
-    ]
+    "skipLibCheck": true,
+    "types": []
   },
   "include": [
     "**/*.ts",
-    "addons/gode/types/**/*.d.ts"
+    "**/*.tsx",
+    "**/*.d.ts"
   ],
   "exclude": [
-    "dist",
     "node_modules",
-    "addons/gode/types/**/*.d.ts"
+    ".godot",
+    ".gode",
+    "addons/gode/tsc"
   ]
 }
