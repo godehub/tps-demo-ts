@@ -1,6 +1,6 @@
 import { RigidBody3D, Vector3, ResourceLoader, OS } from "godot";
 import type { CollisionShape3D, MultiplayerSynchronizer, Node3D, StandardMaterial3D } from "godot";
-import { v3Mul, v3Sub } from "../../../scripts/godot_math.js";
+import { v3Mul, v3Sub } from "../../../scripts/godot_math";
 
 const puffEffect = ResourceLoader.load("res://enemies/red_robot/parts/part_disappear_effect/part_disappear.tscn") as PackedSceneOf<Node3D>;
 const dedicatedServer = OS.has_feature("dedicated_server");
