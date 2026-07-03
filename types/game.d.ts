@@ -51,8 +51,8 @@ declare global {
 	type SettingKey<S extends SettingsSection> = S extends "video" ? VideoSettingKey : RenderingSettingKey;
 
 	type SettingsNode = Node & {
-		GIType: typeof import("../menu/settings.js").GIType;
-		GIQuality: typeof import("../menu/settings.js").GIQuality;
+		GIType: typeof import("../menu/settings").GIType;
+		GIQuality: typeof import("../menu/settings").GIQuality;
 		config_file: ConfigFile;
 		load_settings(): void;
 		save_settings(): void;
