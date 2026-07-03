@@ -1,6 +1,6 @@
 import { CharacterBody3D, PhysicsRayQueryParameters3D, Transform3D, Vector2, Vector3, ResourceLoader, OS } from "godot";
 import type { AnimationPlayer, AudioStreamPlayer3D, CollisionShape3D, CPUParticles3D, Node, Node3D as Node3DType, RayCast3D, Transform3D as Transform3DType, Vector2 as Vector2Type, Vector3 as Vector3Type } from "godot";
-import { transformFromMotion, transformMul, v3Add, v3IsZero, v3Sub, xformInvVector } from "../../scripts/godot_math.js";
+import { transformFromMotion, transformMul, v3Add, v3IsZero, v3Sub, xformInvVector } from "../../scripts/godot_math";
 
 const State = {
 	APPROACH: 0,
