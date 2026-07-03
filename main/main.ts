@@ -45,7 +45,7 @@ export default class Main extends Node {
 			node.connect("quit", () => this.go_to_main_menu());
 		}
 		if (node.has_signal("replace_main_scene")) {
-			node.connect("replace_main_scene", resource => this.replace_main_scene(resource as PackedScene));
+				node.connect("replace_main_scene", (resource: PackedScene) => this.replace_main_scene(resource));
 		}
 	}
 }
