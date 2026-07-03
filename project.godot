@@ -213,4 +213,3 @@ lights_and_shadows/positional_shadow/atlas_size=2048
 lights_and_shadows/positional_shadow/atlas_size.mobile=1024
 lights_and_shadows/positional_shadow/atlas_quadrant_2_subdiv=2
 lights_and_shadows/positional_shadow/atlas_quadrant_3_subdiv=2
-environment/default_environment="res://default_env.tres"
