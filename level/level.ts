@@ -51,8 +51,8 @@ export default class Level extends Node3D {
 				this.add_player(id, spawnPoints.shift() as SpawnPoint | undefined);
 			}
 
-			this.get_multiplayer().connect("peer_connected", id => this.add_player(id as number));
-			this.get_multiplayer().connect("peer_disconnected", id => this.del_player(id as number));
+				this.get_multiplayer().connect("peer_connected", (id: number) => this.add_player(id));
+				this.get_multiplayer().connect("peer_disconnected", (id: number) => this.del_player(id));
 		}
 	}
 
